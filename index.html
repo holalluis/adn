@@ -3,8 +3,10 @@
   <title>adn</title>
   <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
   <style>
+    summary:hover{
+      text-decoration:underline;
+    }
     td.cadena_complementaria{
-      cursor:pointer;
       color:blue;
     }
     td.cadena_complementaria:hover{
@@ -16,9 +18,9 @@
 
 <div id=app>
   <div style="margin:10px 0">
-    <details>
+    <details open>
       <summary>Opcions ADN</summary>
-      <div>
+      <div style="padding-left:20px;">
         <button
           @click="adn=adn.toUpperCase()"
           :disabled="adn==''"
