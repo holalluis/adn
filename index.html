@@ -1,0 +1,285 @@
+<!doctype html><html><head>
+  <meta charset=utf8>
+  <title>adn</title>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <style>
+    td.cadena_complementaria{
+      cursor:pointer;
+      color:blue;
+    }
+    td.cadena_complementaria:hover{
+      text-decoration:underline;
+    }
+  </style>
+</head><body>
+<h1>Transcripció i traducció</h1>
+
+<div id=app>
+  <div style="margin:10px 0">
+    <details>
+      <summary>Opcions ADN</summary>
+      <div>
+        <button
+          @click="adn=adn.toUpperCase()"
+          :disabled="adn==''"
+        >convertir a majúscula</button><br>
+        <button
+          @click="adn=adn.replaceAll(' ','')"
+          :disabled="adn.search(' ')==-1"
+        >eliminar espais</button><br>
+        <button
+          @click="adn=adn.replaceAll('\n','')"
+          :disabled="adn.search('\n')==-1"
+        >eliminar salts de línia</button><br>
+        <button
+          @click="adn=''"
+          :disabled="adn==''"
+        >eliminar seqüència</button>
+      </div>
+    </details>
+  </div>
+
+  <table
+    border=1
+    style="
+      font-family:monospace;
+      border-collapse:collapse;
+    "
+  >
+    <tr><th>ADN 3'&rarr;5'
+      <td title="nucleòtids">{{arn.length}}
+      <td
+        class="cadena_complementaria"
+        @click="adn=adn_compl"
+        title="Intercanviar la cadena complementària"
+        v-html="adn_compl"
+      ></td>
+    </tr>
+
+    <tr>
+      <th style="white-space:nowrap">ADN 5'&rarr;3'</th>
+      <td title="nuclèotids">{{arn.length}}</td>
+      <td style="width:100%">
+        <div
+          style="
+            display:flex;
+          "
+        >
+          <textarea v-model="adn"
+            placeholder="escriu seqüència d'ADN"
+            style="
+              width:100%;
+              font-family:monospace;
+              padding:0;
+              border:0;
+              font-size:13px;
+              background:lightyellow;
+            "
+          ></textarea>
+        </div>
+      </td>
+    </tr>
+
+    <tr><th>ARN 3'&rarr;5'
+      <td title="nucleòtids">{{arn.length}}
+      <td>
+        <span
+          v-for="codo in codons"
+          v-html="codo"
+          :style="{background:codo=='AUG'?'#af0':''}"
+        ></span>
+      </td>
+    </tr>
+
+    <tr><th>Proteïna
+      <td title="aminoàcids">{{prot.length}}
+      <td>
+        <span
+          v-for="aa in prot"
+          :style="{background:colors.aa[aa]}"
+          v-html="aa"
+        ></span>
+      </td>
+    </tr>
+
+    <tr><th>Proteïna
+      <td title="aminoàcids">{{prot.length}}
+      <td>{{prot.map(aa=>aminoacids[aa]).join("")}}
+    </tr>
+  </table>
+</div>
+
+<script>
+  let app=Vue.createApp({
+    data(){return{
+      adn:"tac tac tac att",
+
+      colors:{
+        nu:{
+          "A":"yellow",
+          "T":"red",
+          "C":"lightgreen",
+          "G":"grey",
+          "U":"lightblue",
+        },
+        aa:{
+          'Ala':"",
+          'Arg':"",
+          'Asn':"",
+          'Asp':"",
+          'Cys':"",
+          'Gln':"",
+          'Glu':"",
+          'Gly':"",
+          'His':"",
+          'Ile':"",
+          'Leu':"",
+          'Lys':"",
+          'Met':"#af0",
+          'Phe':"",
+          'Pro':"",
+          'Ser':"",
+          'Thr':"",
+          'Trp':"",
+          'Tyr':"",
+          'Val':"",
+          'stop':"red",
+        },
+      },
+
+      compl:{
+        "A":"T",
+        "T":"A",
+        "C":"G",
+        "G":"C",
+      },
+
+      transcr:{
+        "A":"U",
+        "T":"A",
+        "C":"G",
+        "G":"C",
+      },
+
+      codi_genetic:{
+        "UUU":"Phe", "UUC":"Phe", "UUA":"Leu",  "UUG":"Leu",
+        "UCU":"Ser", "UCC":"Ser", "UCA":"Ser",  "UCG":"Ser",
+        "UAU":"Tyr", "UAC":"Tyr", "UAA":"stop", "UAG":"stop",
+        "UGU":"Cys", "UGC":"Cys", "UGA":"stop", "UGG":"Trp",
+
+        "CUU":"Leu", "CUC":"Leu", "CUA":"Leu", "CUG":"Leu",
+        "CCU":"Pro", "CCC":"Pro", "CCA":"Pro", "CCG":"Pro",
+        "CAU":"His", "CAC":"His", "CAA":"Gln", "CAG":"Gln",
+        "CGU":"Arg", "CGC":"Arg", "CGA":"Arg", "CGG":"Arg",
+
+        "AUU":"Ile", "AUC":"Ile", "AUA":"Ile", "AUG":"Met",
+        "ACU":"Thr", "ACC":"Thr", "ACA":"Thr", "ACG":"Thr",
+        "AAU":"Asn", "AAC":"Asn", "AAA":"Lys", "AAG":"Lys",
+        "AGU":"Ser", "AGC":"Ser", "AGA":"Arg", "AGG":"Arg",
+
+        "GUU":"Val", "GUC":"Val", "GUA":"Val", "GUG":"Val",
+        "GCU":"Ala", "GCC":"Ala", "GCA":"Ala", "GCG":"Ala",
+        "GAU":"Asp", "GAC":"Asp", "GAA":"Glu", "GAG":"Glu",
+        "GGU":"Gly", "GGC":"Gly", "GGA":"Gly", "GGG":"Gly",
+      },
+
+      aminoacids:{
+        "Ala":"A",
+        "Arg":"R",
+        "Asn":"N",
+        "Asp":"D",
+        "Cys":"C",
+        "Glu":"E",
+        "Gln":"Q",
+        "Gly":"G",
+        "His":"H",
+        "Ile":"I",
+        "Leu":"L",
+        "Lys":"K",
+        "Met":"M",
+        "Phe":"F",
+        "Pro":"P",
+        "Ser":"S",
+        "Thr":"T",
+        "Trp":"W",
+        "Tyr":"Y",
+        "Val":"V",
+      },
+    }},
+
+    computed:{
+      arn(){
+        let adn = this.adn.toUpperCase();
+        adn = adn.replaceAll(' ' ,"");
+        adn = adn.replaceAll('\n',"");
+
+        const n = adn.length;
+
+        let arn = "";
+        for(let i=0;i<n;i++){
+          let c = this.transcr[adn[i]];
+
+          if(!c){
+            return "error: seqüència no vàlida";
+          }
+          arn += c;
+        }
+        return arn;
+      },
+
+      adn_compl(){
+        return this.arn.replaceAll("U","T");
+      },
+
+      codons(){
+        let arn = this.arn;
+        let codons=[];
+
+        for(let i=0; i<arn.length; i+=3){
+          let n1 = arn[i  ];
+          let n2 = arn[i+1];
+          let n3 = arn[i+2];
+          if(!n1 || !n2 || !n3) break;
+          let codo = `${n1}${n2}${n3}`;
+          codons.push(codo);
+        }
+        return codons;
+      },
+
+      prot(){
+        const arn = this.arn;
+        if(!arn) return [];
+
+        let prot=[];
+
+        //busca codó inici
+        let index_inici = arn.search("AUG");
+        if(index_inici==-1) return ["error: no codó inici (AUG)"];
+        for(let i=index_inici;i<arn.length;i+=3){
+          let n1 = arn[i];
+          let n2 = arn[i+1];
+          let n3 = arn[i+2];
+          if(!n1 || !n2 || !n3) break;
+
+          let codo = `${n1}${n2}${n3}`;
+          let aa = this.codi_genetic[codo];
+
+          if(!aa){
+            break;
+          }
+
+          prot.push(aa);
+
+          if(aa=="stop"){
+            break;
+          }
+
+          console.log({codo,aa});
+        }
+
+
+        return prot;
+      },
+    },
+  }).mount("#app");
+</script>
