@@ -18,13 +18,9 @@
 
 <div id=app>
   <div style="margin:10px 0">
-    <details open>
+    <details>
       <summary>Opcions ADN</summary>
       <div style="padding-left:20px;">
-        <button
-          @click="adn=adn.toUpperCase()"
-          :disabled="adn==''"
-        >convertir a majúscula</button><br>
         <button
           @click="adn=adn.replaceAll(' ','')"
           :disabled="adn.search(' ')==-1"
@@ -41,6 +37,8 @@
     </details>
   </div>
 
+  <small>Escriu una seqüència d'ADN al quadre groc</small>
+
   <table
     border=1
     style="
@@ -53,7 +51,7 @@
       <td
         class="cadena_complementaria"
         @click="adn=adn_compl"
-        title="Intercanviar la cadena complementària"
+        title="Intercanviar cadena complementària"
         v-html="adn_compl"
       ></td>
     </tr>
@@ -275,10 +273,7 @@
           if(aa=="stop"){
             break;
           }
-
-          console.log({codo,aa});
         }
-
 
         return prot;
       },
